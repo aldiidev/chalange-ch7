@@ -1,0 +1,26 @@
+GET http://localhost:3000
+### REGIST USER
+POST http://localhost:3000/api/v1/user/register
+Content-Type: application/json
+
+{
+    "name":"anjelina",
+    "email":"anjelina@mail.com",
+    "password":"password123",
+    "password_confirmation":"password123"
+}
+
+
+###
+POST http://localhost:3000/api/v1/user/login
+Content-Type: application/json
+
+{
+    "email":"anjelina@mail.com",
+    "password":"password123"
+}
+
+
+###
+GET http://localhost:3000/api/v1/user/whoami
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAwMzMyNDA1fQ.C2ZN76y9666MG_fDU_r4_7giLYxsKv1ouCJ5uWXypek
