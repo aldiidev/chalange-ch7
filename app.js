@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
   console.log(aldii);
   return res.json({
     status: true,
-    message: 'hello ch7',
+    message: 'hello ch7 ',
     error: null,
     data: {
       env: RAILWAY_ENVIRONMENT_NAME,
