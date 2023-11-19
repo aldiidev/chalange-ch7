@@ -1,0 +1,37 @@
+name: Deploy to railway (production)
+
+on: 
+  push:
+    branches:
+      - "master"
+
+jobs: 
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install NodeJS 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install Package
+        run: npm install
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Migrate to railway
+        run: railway run --service ${{ secrets.RAILWAY_SERVICE_ID }} npx prisma migrate deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_PROD_TOKEN }} 
+
+      - name: Deploy to railway
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_PROD_TOKEN }}
+
+      
