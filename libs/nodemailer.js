@@ -37,7 +37,7 @@ module.exports = {
 
   getHtml: (fileName, data) => {
     return new Promise((resolve, reject) => {
-      const path = `${__dirname}/../views/${fileName}`;
+      const path = `${__dirname}/../views/template/${fileName}`;
       // return console.log(path);
       ejs.renderFile(path, data, (err, data) => {
         if (err) {
