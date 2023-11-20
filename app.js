@@ -22,44 +22,34 @@ Sentry.init({
 //midleware
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
 
 // SENTRY MIDLEWARE
 // The request handler must be the first middleware on the app
 app.use(Sentry.Handlers.requestHandler());
-
 // TracingHandler creates a trace for every incoming request
 app.use(Sentry.Handlers.tracingHandler());
 
 //routes
 app.get('/', (req, res) => {
-  console.log(aldii);
-  return res.json({
-    status: true,
-    message: 'hello ch7 ',
-    error: null,
-    data: {
-      env: RAILWAY_ENVIRONMENT_NAME,
-    },
-  });
+  res.redirect('/api/v1/user/login');
 });
-
-const authUser = require('./routes/auth.routes');
-app.use('/api/v1/user', authUser);
+const user = require('./routes/auth.routes');
+app.use('/api/v1/user', user);
 
 // SENTRY ERR HANDLER
 // The error handler must be registered before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 
 //500
-app.use((err, req, res, next) => {
-  res.status(500).json({
-    status: false,
-    message: 'internal server error',
-    err: err.message,
-    data: {
-      env: RAILWAY_ENVIRONMENT_NAME,
-    },
-  });
-});
+// app.use((err, req, res, next) => {
+//   res.status(500).json({
+//     status: false,
+//     message: 'internal server error',
+//     err: err.message,
+//     data: null
+//   });
+// });
 
 app.listen(PORT, () => console.log('app running on port : ', PORT));
