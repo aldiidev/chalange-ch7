@@ -3,6 +3,8 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = process.env;
+const nodemailer = require('../libs/nodemailer');
+const ejs = require('ejs');
 
 module.exports = {
   register: async (req, res, next) => {
@@ -35,6 +37,15 @@ module.exports = {
           password: encryptedPassword,
         },
       });
+      // kirim email
+      let token = jwt.sign({ email: user.email }, JWT_SECRET_KEY);
+      let url = `http://localhost:3000/api/v1/user/activation-email?token=${token}`;
+
+      const html = await nodemailer.getHtml('email-activation.ejs', {
+        name,
+        url,
+      });
+      nodemailer.sendEmail(email, 'Email activation', html);
 
       return res.status(201).json({
         status: true,
@@ -86,6 +97,33 @@ module.exports = {
     } catch (err) {
       next(err);
     }
+  },
+
+  activate: (req, res, next) => {
+    let { token } = req.query;
+
+    jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        return res.status(400).json({
+          status: false,
+          message: 'Bad Request',
+          err: err.message,
+          data: null,
+        });
+      }
+
+      let updated = await prisma.user.update({
+        where: { email: decoded.email },
+        data: { is_verified: true },
+      });
+
+      res.json({
+        status: true,
+        message: 'success',
+        err: null,
+        data: updated,
+      });
+    });
   },
 
   whoami: (req, res, next) => {
