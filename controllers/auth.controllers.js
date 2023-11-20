@@ -125,6 +125,65 @@ module.exports = {
       });
     });
   },
+  resetPassword: async (req, res, next) => {
+    try {
+      let { email } = req.body;
+      let emailExist = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (!emailExist) {
+        return res.status(400).json({
+          status: false,
+          message: 'Email Not Found',
+          err: 'Enter Regisreted Email!',
+          data: null,
+        });
+      }
+      let token = jwt.sign({ email: emailExist.email }, JWT_SECRET_KEY);
+      let url = `http://localhost:3000/api/v1/user/change-password?token=${token}`;
+
+      const html = await nodemailer.getHtml('reset-password-valid.ejs', {
+        email,
+        url,
+      });
+      nodemailer.sendEmail(email, 'Reset Password', html);
+      return res.status(200).json({
+        status: true,
+        message: 'Send',
+        err: null,
+        data: { email },
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+  changepassword: (req, res) => {
+    let { token } = req.query;
+    let { password } = req.body;
+
+    jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        return res.status(400).json({
+          status: false,
+          message: 'Bad Request',
+          err: err.message,
+          data: null,
+        });
+      }
+      let encryptedPassword = await bcrypt.hash(password, 10);
+      let updated = await prisma.user.update({
+        where: { email: decoded.email },
+        data: { password: encryptedPassword },
+      });
+
+      res.json({
+        status: true,
+        message: 'success',
+        err: null,
+        data: updated,
+      });
+    });
+  },
 
   whoami: (req, res, next) => {
     return res.status(200).json({

@@ -35,6 +35,7 @@ app.use(Sentry.Handlers.tracingHandler());
 app.get('/', (req, res) => {
   res.redirect('/api/v1/user/login');
 });
+
 const user = require('./routes/auth.routes');
 app.use('/api/v1/user', user);
 
