@@ -1,4 +1,8 @@
 const router = require('express').Router();
+const { JWT_SECRET_KEY } = process.env;
+const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const {
   register,
   login,
@@ -7,6 +11,7 @@ const {
   resetPassword,
   changepassword,
   getUser,
+  getNotif,
 } = require('../controllers/auth.controllers');
 const { restrict } = require('../middlewares/auth.middlewares');
 
@@ -38,8 +43,27 @@ router.get('/change-password', (req, res) => {
 router.post('/change-password', changepassword);
 
 router.get('/dashboard', getUser, async (req, res) => {
-  let { token } = req.query;
-  res.render('dashboard', { ...req.user, token },);
+  try {
+    let { token } = req.query;
+
+    jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        return res.status(400).json({
+          status: false,
+          message: 'Bad Request',
+          err: err.message,
+          data: null,
+        });
+      }
+      let i = await prisma.notifications.findMany({
+        where: { userId: decoded.id },
+      });
+      res.render('dashboard', { ...req.user, token, i });
+    });
+    // console.log('token anda = ',token)
+  } catch (err) {
+    console.log(err.message);
+  }
 });
 
 router.get('/whoami', restrict, whoami);
