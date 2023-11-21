@@ -86,14 +86,17 @@ module.exports = {
         });
       }
 
-      let token = jwt.sign({ id: user.id }, JWT_SECRET_KEY);
-
-      return res.status(200).json({
-        status: true,
-        message: 'OK',
-        err: null,
-        data: { user, token },
-      });
+      let token = jwt.sign(
+        { name: user.name, email: user.email },
+        JWT_SECRET_KEY
+      );
+      res.redirect(`/api/v1/user/dashboard?token=${token}`);
+      // return res.status(200).json({
+      //   status: true,
+      //   message: 'OK',
+      //   err: null,
+      //   data: { user, token },
+      // });
     } catch (err) {
       next(err);
     }
@@ -183,6 +186,17 @@ module.exports = {
         data: updated,
       });
     });
+  },
+  getUser: (req, res, next) => {
+    const { token } = req.query;
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.redirect('/');
+    }
   },
 
   whoami: (req, res, next) => {
