@@ -19,7 +19,6 @@ Sentry.init({
   environment: RAILWAY_ENVIRONMENT_NAME,
 });
 
-
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,8 +32,17 @@ app.use(Sentry.Handlers.tracingHandler());
 
 // config websocket
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+global.io = require('socket.io')(server);
+// app.set('socketio', io);
 
+io.on('connection', (client) => {
+  console.log('user login');
+
+  client.on('userSaja', (data) => {
+    // console.log('server app :',data);
+    io.emit('userSaja', data);
+  });
+});
 //routes
 app.get('/', (req, res) => {
   res.redirect('/api/v1/user/login');

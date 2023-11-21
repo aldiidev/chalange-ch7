@@ -154,13 +154,15 @@ module.exports = {
         });
       }
       let userId = emailExist.id;
-      await prisma.notifications.create({
+      let nReset = await prisma.notifications.create({
         data: {
           userId,
           title: 'Request Reset Password!',
           body: `your account just request to reset password, please check your email or ignore this message if its not you!`,
         },
       });
+      io.emit(`user-${emailExist.email}`, nReset);
+
       let token = jwt.sign({ email: emailExist.email }, JWT_SECRET_KEY);
       let url = `http://localhost:3000/api/v1/user/change-password?token=${token}`;
 
