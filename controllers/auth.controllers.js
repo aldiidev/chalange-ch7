@@ -130,6 +130,14 @@ module.exports = {
         where: { email: decoded.email },
         data: { is_verified: true },
       });
+      let nVerif = await prisma.notifications.create({
+        data: {
+          userId: updated.id,
+          title: 'Verified Emaill Success',
+          body: `your email has been verified! `,
+        },
+      });
+      io.emit(`user-${updated.email}`, nVerif);
 
       res.json({
         status: true,
@@ -199,6 +207,14 @@ module.exports = {
         where: { email: decoded.email },
         data: { password: encryptedPassword },
       });
+      let nSuccess = await prisma.notifications.create({
+        data: {
+          userId: updated.id,
+          title: 'Reset password Success',
+          body: `your password account has been changed! please login with your new password `,
+        },
+      });
+      io.emit(`user-${updated.email}`, nSuccess);
 
       res.json({
         status: true,
