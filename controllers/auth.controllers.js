@@ -130,6 +130,14 @@ module.exports = {
         where: { email: decoded.email },
         data: { is_verified: true },
       });
+      let nVerif = await prisma.notifications.create({
+        data: {
+          userId: updated.id,
+          title: 'Verified Emaill Success',
+          body: `your email has been verified! `,
+        },
+      });
+      io.emit(`user-${updated.email}`, nVerif);
 
       res.json({
         status: true,
@@ -154,13 +162,15 @@ module.exports = {
         });
       }
       let userId = emailExist.id;
-      await prisma.notifications.create({
+      let nReset = await prisma.notifications.create({
         data: {
           userId,
           title: 'Request Reset Password!',
           body: `your account just request to reset password, please check your email or ignore this message if its not you!`,
         },
       });
+      io.emit(`user-${emailExist.email}`, nReset);
+
       let token = jwt.sign({ email: emailExist.email }, JWT_SECRET_KEY);
       let url = `http://localhost:3000/api/v1/user/change-password?token=${token}`;
 
@@ -197,6 +207,14 @@ module.exports = {
         where: { email: decoded.email },
         data: { password: encryptedPassword },
       });
+      let nSuccess = await prisma.notifications.create({
+        data: {
+          userId: updated.id,
+          title: 'Reset password Success',
+          body: `your password account has been changed! please login with your new password `,
+        },
+      });
+      io.emit(`user-${updated.email}`, nSuccess);
 
       res.json({
         status: true,

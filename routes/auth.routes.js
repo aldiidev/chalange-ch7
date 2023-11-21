@@ -58,9 +58,8 @@ router.get('/dashboard', getUser, async (req, res) => {
       let i = await prisma.notifications.findMany({
         where: { userId: decoded.id },
       });
-      res.render('dashboard', { ...req.user, token, i });
+      res.render('dashboard', { ...req.user, i });
     });
-    // console.log('token anda = ',token)
   } catch (err) {
     console.log(err.message);
   }

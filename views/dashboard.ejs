@@ -68,29 +68,43 @@
     </style>
   </head>
   <body>
-    <h2>Login Form</h2>
-    <script src="../controllers/auth.controllers.js"></script>
+    <h2>Dashboard Form</h2>
     <form action="/api/v1/user/login" method="get">
       <div class="container">
         <label><b>Name : </b></label>
-        <label for="email"><b><%=name%></b></label> <br />
+        <label for="name" ><b><%=name%></b></label> <br />
         <label><b>Email : </b></label>
-        <label for="email"><b><%=email%></b></label> <br />
+        <label for="email" id="email"><b><%=email%></b></label> <br />
         <hr />
 
         <h2>Notification List</h2>
-        <ul id="notificationList"></ul>
-        <% i.map(e => { %>
-          <li>
-            <a href=<%=``%> action="get"><b> <%= e.title%> </b></a>
-            <p><%= e.body%></p>
-          </li>
+        <ul id="notification">
+          <% i.forEach(e=>{ %>
+            <li>
+              <a href=<%=`notification/${e.id}/mark-is-read`%> action="post"><b> <%= e.title%> </b></a>
+              <p><%= e.body%></p>
+            </li>
           <% }) %>
         </ul>
-        <br /><br /><br />
+        <br/><br/><br/>
         <button type="submit" class="cancelbtn">Logout</button>
       </div>
     </form>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <!-- socket config -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+      let notif = document.getElementById('notification')
+      let email = document.getElementById('email')
+      let notifTopic = `user-${email.textContent}`;
+
+
+      socket.on(notifTopic, d => {
+        let item = document.createElement('li')
+        item.innerHTML = `<a href='' action='post'><b> ${d.title} </b></a>
+        <p>${d.body}</p>`
+        notif.append(item)
+      })
+    </script>
   </body>
 </html>
