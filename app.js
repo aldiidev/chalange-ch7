@@ -40,17 +40,6 @@ app.get('/', (req, res) => {
   res.redirect('/api/v1/user/login');
 });
 
-app.get('/notif', (req, res) => {
-  let { user_id } = req.query;
-  let db = require('./db.json');
-  let notifications = db.notifications;
-  if (user_id) {
-    notifications = notifications.filter((i) => i.user_id == user_id);
-  }
-
-  res.render('notification', { notifications, user_id });
-});
-
 const user = require('./routes/auth.routes');
 app.use('/api/v1/user', user);
 
