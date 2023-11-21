@@ -48,8 +48,10 @@ module.exports = {
       });
       // kirim email
       let token = jwt.sign({ email: user.email }, JWT_SECRET_KEY);
-      let url = `http://localhost:3000/api/v1/user/activation-email?token=${token}`;
 
+      var location = req.headers.origin;
+      // let url = `http://localhost:3000/api/v1/user/activation-email?token=${token}`;
+      let url = `${location}/api/v1/user/activation-email?token=${token}`;
       const html = await nodemailer.getHtml('email-activation.ejs', {
         name,
         url,
@@ -172,8 +174,9 @@ module.exports = {
       io.emit(`user-${emailExist.email}`, nReset);
 
       let token = jwt.sign({ email: emailExist.email }, JWT_SECRET_KEY);
-      let url = `http://localhost:3000/api/v1/user/change-password?token=${token}`;
-
+      var location = req.headers.origin;
+      let url = `${location}/api/v1/user/change-password?token=${token}`;
+      console.log('pass', url);
       const html = await nodemailer.getHtml('reset-password-valid.ejs', {
         email,
         url,
