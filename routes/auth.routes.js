@@ -5,7 +5,8 @@ const {
   whoami,
   activate,
   resetPassword,
-  changepassword
+  changepassword,
+  getUser,
 } = require('../controllers/auth.controllers');
 const { restrict } = require('../middlewares/auth.middlewares');
 
@@ -28,13 +29,18 @@ router.post('/activation-email', activate);
 router.get('/reset-password', (req, res) => {
   res.render('reset-password');
 });
-router.post('/reset-password',resetPassword)
+router.post('/reset-password', resetPassword);
 
-router.get('/change-password',(req,res)=>{
+router.get('/change-password', (req, res) => {
   let { token } = req.query;
-res.render('reset-password-form',{token})
-})
-router.post('/change-password',changepassword)
+  res.render('reset-password-form', { token });
+});
+router.post('/change-password', changepassword);
+
+router.get('/dashboard', getUser, async (req, res) => {
+  let { token } = req.query;
+  res.render('dashboard', { ...req.user, token },);
+});
 
 router.get('/whoami', restrict, whoami);
 module.exports = router;
