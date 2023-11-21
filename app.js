@@ -19,7 +19,7 @@ Sentry.init({
   environment: RAILWAY_ENVIRONMENT_NAME,
 });
 
-//midleware
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +30,10 @@ app.set('view engine', 'ejs');
 app.use(Sentry.Handlers.requestHandler());
 // TracingHandler creates a trace for every incoming request
 app.use(Sentry.Handlers.tracingHandler());
+
+// config websocket
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 //routes
 app.get('/', (req, res) => {
@@ -64,4 +68,4 @@ app.use(Sentry.Handlers.errorHandler());
 //   });
 // });
 
-app.listen(PORT, () => console.log('app running on port : ', PORT));
+server.listen(PORT, () => console.log('app running on port : ', PORT));

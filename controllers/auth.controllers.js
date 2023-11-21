@@ -37,6 +37,15 @@ module.exports = {
           password: encryptedPassword,
         },
       });
+      //create notif
+      let userId = user.id;
+      await prisma.notifications.create({
+        data: {
+          userId,
+          title: 'Account successfully created!',
+          body: `Wellcome to our aplication ${name}`,
+        },
+      });
       // kirim email
       let token = jwt.sign({ email: user.email }, JWT_SECRET_KEY);
       let url = `http://localhost:3000/api/v1/user/activation-email?token=${token}`;
@@ -47,12 +56,14 @@ module.exports = {
       });
       nodemailer.sendEmail(email, 'Email activation', html);
 
-      return res.status(201).json({
-        status: true,
-        message: 'Created',
-        err: null,
-        data: { user },
-      });
+      res.redirect('/api/v1/user/login');
+
+      // return res.status(201).json({
+      //   status: true,
+      //   message: 'Created',
+      //   err: null,
+      //   data: { user },
+      // });
     } catch (err) {
       next(err);
     }
@@ -142,6 +153,14 @@ module.exports = {
           data: null,
         });
       }
+      let userId = emailExist.id;
+      await prisma.notifications.create({
+        data: {
+          userId,
+          title: 'Request Reset Password!',
+          body: `your account just request to reset password, please check your email or ignore this message if its not you!`,
+        },
+      });
       let token = jwt.sign({ email: emailExist.email }, JWT_SECRET_KEY);
       let url = `http://localhost:3000/api/v1/user/change-password?token=${token}`;
 
