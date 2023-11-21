@@ -38,7 +38,7 @@
         width: auto;
         padding: 10px 18px;
         background-color: #f44336;
-  		position: center;
+        position: center;
       }
 
       img.avatar {
@@ -69,22 +69,28 @@
   </head>
   <body>
     <h2>Login Form</h2>
-<script src="../controllers/auth.controllers.js"></script>
+    <script src="../controllers/auth.controllers.js"></script>
     <form action="/api/v1/user/login" method="get">
       <div class="container">
         <label><b>Name : </b></label>
-        <label for="email"><b><%=name%></b></label> <br>
+        <label for="email"><b><%=name%></b></label> <br />
         <label><b>Email : </b></label>
-        <label for="email"><b><%=email%></b></label> <br>
-        <hr>
+        <label for="email"><b><%=email%></b></label> <br />
+        <hr />
 
         <h2>Notification List</h2>
-        
-        
-<br><br><br>
+        <ul id="notificationList"></ul>
+        <% i.map(e => { %>
+          <li>
+            <a href=<%=``%> action="get"><b> <%= e.title%> </b></a>
+            <p><%= e.body%></p>
+          </li>
+          <% }) %>
+        </ul>
+        <br /><br /><br />
         <button type="submit" class="cancelbtn">Logout</button>
-        
       </div>
     </form>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
   </body>
 </html>

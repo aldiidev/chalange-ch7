@@ -87,7 +87,7 @@ module.exports = {
       }
 
       let token = jwt.sign(
-        { name: user.name, email: user.email },
+        { name: user.name, email: user.email, id: user.id },
         JWT_SECRET_KEY
       );
       res.redirect(`/api/v1/user/dashboard?token=${token}`);
@@ -187,15 +187,32 @@ module.exports = {
       });
     });
   },
-  getUser: (req, res, next) => {
+  getUser: async (req, res, next) => {
     const { token } = req.query;
-
     try {
       const decoded = jwt.verify(token, JWT_SECRET_KEY);
       req.user = decoded;
+
       next();
-    } catch (error) {
-      res.redirect('/');
+    } catch (err) {
+      console.log(err.message);
+      // res.redirect('/wrong');
+    }
+  },
+  getNotif: async (req, res) => {
+    const { token } = req.query;
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      req.user = decoded;
+      const notifications = await prisma.notifications.findMany({
+        where: {
+          userId: req.user.id,
+        },
+      });
+      console.log(notifications);
+      // return notifications;
+    } catch (err) {
+      console.log(err.message);
     }
   },
 
